@@ -20,6 +20,20 @@ export class V3AgentHandler {
   private executionModel?: string;
   private systemInstructions?: string;
   private mcpTools?: ToolSet;
+  private hooks?: {
+    on_step_start?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+    }) => void | Promise<void>;
+    on_step_end?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+      actionsPerformed: number;
+      completed: boolean;
+    }) => void | Promise<void>;
+  };
 
   constructor(
     v3: V3,
@@ -28,6 +42,20 @@ export class V3AgentHandler {
     executionModel?: string,
     systemInstructions?: string,
     mcpTools?: ToolSet,
+    hooks?: {
+      on_step_start?: (stepInfo: {
+        stepNumber: number;
+        maxSteps: number;
+        instruction: string;
+      }) => void | Promise<void>;
+      on_step_end?: (stepInfo: {
+        stepNumber: number;
+        maxSteps: number;
+        instruction: string;
+        actionsPerformed: number;
+        completed: boolean;
+      }) => void | Promise<void>;
+    },
   ) {
     this.v3 = v3;
     this.logger = logger;
@@ -35,6 +63,7 @@ export class V3AgentHandler {
     this.executionModel = executionModel;
     this.systemInstructions = systemInstructions;
     this.mcpTools = mcpTools;
+    this.hooks = hooks;
   }
 
   public async execute(
@@ -51,6 +80,7 @@ export class V3AgentHandler {
     let finalMessage = "";
     let completed = false;
     const collectedReasoning: string[] = [];
+    let currentStepNumber = 0;
 
     let currentPageUrl = (await this.v3.context.awaitActivePage()).url();
 
@@ -88,6 +118,26 @@ export class V3AgentHandler {
         temperature: 1,
         toolChoice: "auto",
         onStepFinish: async (event) => {
+          currentStepNumber++;
+          const stepStartActionsCount = actions.length;
+
+          // 🪝 HOOK: on_step_start - Called before the agent processes the current state
+          if (this.hooks?.on_step_start) {
+            try {
+              await this.hooks.on_step_start({
+                stepNumber: currentStepNumber,
+                maxSteps,
+                instruction: options.instruction,
+              });
+            } catch (hookError) {
+              this.logger({
+                category: "agent",
+                message: `Error in on_step_start hook: ${hookError instanceof Error ? hookError.message : String(hookError)}`,
+                level: 0,
+              });
+            }
+          }
+
           this.logger({
             category: "agent",
             message: `Step finished: ${event.finishReason}`,
@@ -133,6 +183,25 @@ export class V3AgentHandler {
               }
             }
             currentPageUrl = (await this.v3.context.awaitActivePage()).url();
+          }
+
+          // 🪝 HOOK: on_step_end - Called after the agent has executed all actions for this step
+          if (this.hooks?.on_step_end) {
+            try {
+              await this.hooks.on_step_end({
+                stepNumber: currentStepNumber,
+                maxSteps,
+                instruction: options.instruction,
+                actionsPerformed: actions.length - stepStartActionsCount,
+                completed,
+              });
+            } catch (hookError) {
+              this.logger({
+                category: "agent",
+                message: `Error in on_step_end hook: ${hookError instanceof Error ? hookError.message : String(hookError)}`,
+                level: 0,
+              });
+            }
           }
         },
       });

@@ -86,4 +86,21 @@ export interface V3Options {
   cacheDir?: string;
   domSettleTimeout?: number;
   disableAPI?: boolean;
+  /** Agent step hooks */
+  hooks?: {
+    /** Called at the beginning of each agent step, before the agent processes the current state */
+    on_step_start?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+    }) => void | Promise<void>;
+    /** Called at the end of each agent step, after the agent has executed all actions */
+    on_step_end?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+      actionsPerformed: number;
+      completed: boolean;
+    }) => void | Promise<void>;
+  };
 }

@@ -1513,6 +1513,7 @@ export class V3 {
                   `You are a helpful assistant that can use a web browser.\nDo not ask follow up questions, the user will trust your judgement.`,
               },
               tools,
+              this.opts.hooks,
             );
 
             const resolvedOptions: AgentExecuteOptions =
@@ -1616,6 +1617,7 @@ export class V3 {
               : options?.executionModel?.modelName,
             options?.systemPrompt,
             tools,
+            this.opts.hooks,
           );
 
           const resolvedOptions: AgentExecuteOptions =

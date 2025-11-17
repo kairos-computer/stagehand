@@ -22,16 +22,45 @@ export class V3CuaAgentHandler {
   private agentClient: AgentClient;
   private options: AgentHandlerOptions;
   private highlightCursor: boolean;
+  private hooks?: {
+    on_step_start?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+    }) => void | Promise<void>;
+    on_step_end?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+      actionsPerformed: number;
+      completed: boolean;
+    }) => void | Promise<void>;
+  };
 
   constructor(
     v3: V3,
     logger: (message: LogLine) => void,
     options: AgentHandlerOptions,
     tools?: ToolSet,
+    hooks?: {
+      on_step_start?: (stepInfo: {
+        stepNumber: number;
+        maxSteps: number;
+        instruction: string;
+      }) => void | Promise<void>;
+      on_step_end?: (stepInfo: {
+        stepNumber: number;
+        maxSteps: number;
+        instruction: string;
+        actionsPerformed: number;
+        completed: boolean;
+      }) => void | Promise<void>;
+    },
   ) {
     this.v3 = v3;
     this.logger = logger;
     this.options = options;
+    this.hooks = hooks;
 
     this.provider = new AgentProvider(logger);
     const client = this.provider.getClient(
@@ -41,6 +70,12 @@ export class V3CuaAgentHandler {
       tools,
     );
     this.agentClient = client;
+
+    // Set hooks if provided
+    if (this.hooks) {
+      this.agentClient.setHooks(this.hooks);
+    }
+
     this.setupAgentClient();
     this.agent = client;
   }

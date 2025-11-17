@@ -127,12 +127,32 @@ export class AnthropicCUAClient extends AgentClient {
     try {
       // Execute steps until completion or max steps reached
       while (!completed && currentStep < maxSteps) {
+        const stepNumber = currentStep + 1;
+
         logger({
           category: "agent",
-          message: `Executing step ${currentStep + 1}/${maxSteps}`,
+          message: `Executing step ${stepNumber}/${maxSteps}`,
           level: 1,
         });
 
+        // 🪝 HOOK: on_step_start - Called before the agent processes the current state
+        if (this.hooks?.on_step_start) {
+          try {
+            await this.hooks.on_step_start({
+              stepNumber,
+              maxSteps,
+              instruction,
+            });
+          } catch (hookError) {
+            logger({
+              category: "agent",
+              message: `Error in on_step_start hook: ${hookError instanceof Error ? hookError.message : String(hookError)}`,
+              level: 0,
+            });
+          }
+        }
+
+        const stepStartActionsCount = actions.length;
         const result = await this.executeStep(inputItems, logger);
         totalInputTokens += result.usage.input_tokens;
         totalOutputTokens += result.usage.output_tokens;
@@ -142,7 +162,7 @@ export class AnthropicCUAClient extends AgentClient {
         if (result.actions.length > 0) {
           logger({
             category: "agent",
-            message: `Step ${currentStep + 1} performed ${result.actions.length} actions`,
+            message: `Step ${stepNumber} performed ${result.actions.length} actions`,
             level: 2,
           });
           actions.push(...result.actions);
@@ -164,6 +184,25 @@ export class AnthropicCUAClient extends AgentClient {
 
         // Increment step counter
         currentStep++;
+
+        // 🪝 HOOK: on_step_end - Called after the agent has executed all actions for this step
+        if (this.hooks?.on_step_end) {
+          try {
+            await this.hooks.on_step_end({
+              stepNumber,
+              maxSteps,
+              instruction,
+              actionsPerformed: actions.length - stepStartActionsCount,
+              completed,
+            });
+          } catch (hookError) {
+            logger({
+              category: "agent",
+              message: `Error in on_step_end hook: ${hookError instanceof Error ? hookError.message : String(hookError)}`,
+              level: 0,
+            });
+          }
+        }
       }
 
       logger({
