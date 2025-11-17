@@ -1,3 +1,10 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, Nov. 17 2025
+ * - Pass hooks from V3Options to V3AgentHandler and V3CuaAgentHandler constructors
+ */
+
 import dotenv from "dotenv";
 import fs from "fs";
 import os from "os";
@@ -1513,6 +1520,7 @@ export class V3 {
                   `You are a helpful assistant that can use a web browser.\nDo not ask follow up questions, the user will trust your judgement.`,
               },
               tools,
+              this.opts.hooks,
             );
 
             const resolvedOptions: AgentExecuteOptions =
@@ -1616,6 +1624,7 @@ export class V3 {
               : options?.executionModel?.modelName,
             options?.systemPrompt,
             tools,
+            this.opts.hooks,
           );
 
           const resolvedOptions: AgentExecuteOptions =

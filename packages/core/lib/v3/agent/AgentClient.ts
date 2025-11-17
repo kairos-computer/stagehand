@@ -1,3 +1,11 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, Nov. 17 2025
+ * - Added setHooks() method for agent step lifecycle callbacks
+ * - Added protected hooks property for step notifications
+ */
+
 import {
   AgentAction,
   AgentResult,
@@ -14,6 +22,20 @@ export abstract class AgentClient {
   public modelName: string;
   public clientOptions: Record<string, unknown>;
   public userProvidedInstructions?: string;
+  protected hooks?: {
+    on_step_start?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+    }) => void | Promise<void>;
+    on_step_end?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+      actionsPerformed: number;
+      completed: boolean;
+    }) => void | Promise<void>;
+  };
 
   constructor(
     type: AgentType,
@@ -24,6 +46,23 @@ export abstract class AgentClient {
     this.modelName = modelName;
     this.userProvidedInstructions = userProvidedInstructions;
     this.clientOptions = {};
+  }
+
+  setHooks(hooks?: {
+    on_step_start?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+    }) => void | Promise<void>;
+    on_step_end?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+      actionsPerformed: number;
+      completed: boolean;
+    }) => void | Promise<void>;
+  }): void {
+    this.hooks = hooks;
   }
 
   abstract execute(options: AgentExecutionOptions): Promise<AgentResult>;

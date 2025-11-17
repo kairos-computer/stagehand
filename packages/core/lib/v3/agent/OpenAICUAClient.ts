@@ -1,3 +1,12 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, 2025
+ * - Implemented on_step_start hook before executeStep()
+ * - Implemented on_step_end hook after step completes
+ * - Added step number tracking and actions count
+ */
+
 import OpenAI from "openai";
 import { LogLine } from "../types/public/logs";
 import {
@@ -118,12 +127,32 @@ export class OpenAICUAClient extends AgentClient {
     try {
       // Execute steps until completion or max steps reached
       while (!completed && currentStep < maxSteps) {
+        const stepNumber = currentStep + 1;
+
         logger({
           category: "agent",
-          message: `Executing step ${currentStep + 1}/${maxSteps}`,
+          message: `Executing step ${stepNumber}/${maxSteps}`,
           level: 1,
         });
 
+        // 🪝 HOOK: on_step_start - Called before the agent processes the current state
+        if (this.hooks?.on_step_start) {
+          try {
+            await this.hooks.on_step_start({
+              stepNumber,
+              maxSteps,
+              instruction,
+            });
+          } catch (hookError) {
+            logger({
+              category: "agent",
+              message: `Error in on_step_start hook: ${hookError instanceof Error ? hookError.message : String(hookError)}`,
+              level: 0,
+            });
+          }
+        }
+
+        const stepStartActionsCount = actions.length;
         const result = await this.executeStep(
           inputItems,
           previousResponseId,
@@ -155,6 +184,25 @@ export class OpenAICUAClient extends AgentClient {
 
         // Increment step counter
         currentStep++;
+
+        // 🪝 HOOK: on_step_end - Called after the agent has executed all actions for this step
+        if (this.hooks?.on_step_end) {
+          try {
+            await this.hooks.on_step_end({
+              stepNumber,
+              maxSteps,
+              instruction,
+              actionsPerformed: actions.length - stepStartActionsCount,
+              completed,
+            });
+          } catch (hookError) {
+            logger({
+              category: "agent",
+              message: `Error in on_step_end hook: ${hookError instanceof Error ? hookError.message : String(hookError)}`,
+              level: 0,
+            });
+          }
+        }
       }
 
       // Return the final result

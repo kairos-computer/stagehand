@@ -1,3 +1,11 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, Nov. 17 2025
+ * - Added native agent step hooks (on_step_start, on_step_end)
+ * - Added hooks field to V3Options interface
+ */
+
 import Browserbase from "@browserbasehq/sdk";
 import { LLMClient } from "../../llm/LLMClient";
 import { ModelConfiguration } from "./model";
@@ -86,4 +94,22 @@ export interface V3Options {
   cacheDir?: string;
   domSettleTimeout?: number;
   disableAPI?: boolean;
+
+  /** Agent step hooks */
+  hooks?: {
+    /** Called at the beginning of each agent step, before the agent processes the current state */
+    on_step_start?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+    }) => void | Promise<void>;
+    /** Called at the end of each agent step, after the agent has executed all actions */
+    on_step_end?: (stepInfo: {
+      stepNumber: number;
+      maxSteps: number;
+      instruction: string;
+      actionsPerformed: number;
+      completed: boolean;
+    }) => void | Promise<void>;
+  };
 }

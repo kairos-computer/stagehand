@@ -13,6 +13,17 @@
   <a href="https://docs.stagehand.dev">Read the Docs</a>
 </p>
 
+---
+
+> **🔧 Kairos Computer Fork**
+>
+> This is a modified version of Stagehand for internal use at Kairos Computer.
+> See [MODIFICATIONS.md](./MODIFICATIONS.md) for a complete list of changes from the original repository.
+>
+> Original repository: https://github.com/browserbase/stagehand
+
+---
+
 <p align="center">
   <a href="https://github.com/browserbase/stagehand/tree/main?tab=MIT-1-ov-file#MIT-1-ov-file">
     <picture>
