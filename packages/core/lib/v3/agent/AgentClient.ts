@@ -1,3 +1,11 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, 2025
+ * - Added setHooks() method for agent step lifecycle callbacks
+ * - Added protected hooks property for step notifications
+ */
+
 import {
   AgentAction,
   AgentResult,

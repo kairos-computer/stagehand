@@ -1,3 +1,11 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, 2025
+ * - Added hooks parameter to constructor
+ * - Pass hooks to AgentClient via setHooks()
+ */
+
 import { computeActiveElementXpath } from "../understudy/a11y/snapshot";
 import { V3 } from "../v3";
 import { ToolSet } from "ai";

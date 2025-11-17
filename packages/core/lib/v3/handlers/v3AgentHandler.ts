@@ -1,3 +1,12 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, 2025
+ * - Added hooks parameter to constructor
+ * - Implemented on_step_start and on_step_end hooks in onStepFinish callback
+ * - Added step number tracking for hook notifications
+ */
+
 import { createAgentTools } from "../agent/tools";
 import { LogLine } from "../types/public/logs";
 import { V3 } from "../v3";

@@ -1,3 +1,10 @@
+/*
+ * Copyright 2025 Original Stagehand Contributors
+ *
+ * Modified by Kairos Computer, 2025
+ * - Pass hooks from V3Options to V3AgentHandler and V3CuaAgentHandler constructors
+ */
+
 import dotenv from "dotenv";
 import fs from "fs";
 import os from "os";
