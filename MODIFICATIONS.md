@@ -2,7 +2,7 @@
 
 This fork contains the following modifications from the original Stagehand library:
 
-## Changes by Kairos Computer (2025)
+## Changes by Kairos Computer (Nov 17, 2025)
 
 ### Native Agent Step Hooks
 
