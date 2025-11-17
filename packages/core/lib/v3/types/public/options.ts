@@ -1,7 +1,7 @@
 /*
  * Copyright 2025 Original Stagehand Contributors
  *
- * Modified by Kairos Computer, 2025
+ * Modified by Kairos Computer, Nov. 17 2025
  * - Added native agent step hooks (on_step_start, on_step_end)
  * - Added hooks field to V3Options interface
  */

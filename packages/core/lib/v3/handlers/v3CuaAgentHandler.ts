@@ -1,7 +1,7 @@
 /*
  * Copyright 2025 Original Stagehand Contributors
  *
- * Modified by Kairos Computer, 2025
+ * Modified by Kairos Computer, Nov. 17 2025
  * - Added hooks parameter to constructor
  * - Pass hooks to AgentClient via setHooks()
  */
