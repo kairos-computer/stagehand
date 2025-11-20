@@ -199,11 +199,15 @@ export class GoogleCUAClient extends AgentClient {
         // 🪝 HOOK: on_step_start - Called before the agent processes the current state
         if (this.hooks?.on_step_start) {
           try {
-            await this.hooks.on_step_start({
+            const stopProcessing = await this.hooks.on_step_start({
               stepNumber,
               maxSteps,
               instruction,
             });
+            if (stopProcessing) {
+              completed = true;
+              break;
+            }
           } catch (hookError) {
             logger({
               category: "agent",
@@ -242,6 +246,7 @@ export class GoogleCUAClient extends AgentClient {
               maxSteps,
               instruction,
               actionsPerformed: actions.length - stepStartActionsCount,
+              message: finalMessage,
               completed,
             });
           } catch (hookError) {

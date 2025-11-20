@@ -34,12 +34,13 @@ export class V3AgentHandler {
       stepNumber: number;
       maxSteps: number;
       instruction: string;
-    }) => void | Promise<void>;
+    }) => boolean | Promise<boolean> | void;
     on_step_end?: (stepInfo: {
       stepNumber: number;
       maxSteps: number;
       instruction: string;
       actionsPerformed: number;
+      message: string;
       completed: boolean;
     }) => void | Promise<void>;
   };
@@ -56,12 +57,13 @@ export class V3AgentHandler {
         stepNumber: number;
         maxSteps: number;
         instruction: string;
-      }) => void | Promise<void>;
+      }) => boolean | Promise<boolean> | void;
       on_step_end?: (stepInfo: {
         stepNumber: number;
         maxSteps: number;
         instruction: string;
         actionsPerformed: number;
+        message: string;
         completed: boolean;
       }) => void | Promise<void>;
     },
@@ -133,11 +135,15 @@ export class V3AgentHandler {
           // 🪝 HOOK: on_step_start - Called before the agent processes the current state
           if (this.hooks?.on_step_start) {
             try {
-              await this.hooks.on_step_start({
+              const stopProcessing = await this.hooks.on_step_start({
                 stepNumber: currentStepNumber,
                 maxSteps,
                 instruction: options.instruction,
               });
+              if (stopProcessing) {
+                completed = true;
+                return;
+              }
             } catch (hookError) {
               this.logger({
                 category: "agent",
@@ -202,6 +208,7 @@ export class V3AgentHandler {
                 maxSteps,
                 instruction: options.instruction,
                 actionsPerformed: actions.length - stepStartActionsCount,
+                message: event.text,
                 completed,
               });
             } catch (hookError) {

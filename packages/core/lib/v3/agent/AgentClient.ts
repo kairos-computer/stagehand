@@ -27,12 +27,13 @@ export abstract class AgentClient {
       stepNumber: number;
       maxSteps: number;
       instruction: string;
-    }) => void | Promise<void>;
+    }) => boolean | Promise<boolean> | void;
     on_step_end?: (stepInfo: {
       stepNumber: number;
       maxSteps: number;
       instruction: string;
       actionsPerformed: number;
+      message: string;
       completed: boolean;
     }) => void | Promise<void>;
   };
@@ -53,12 +54,13 @@ export abstract class AgentClient {
       stepNumber: number;
       maxSteps: number;
       instruction: string;
-    }) => void | Promise<void>;
+    }) => boolean | Promise<boolean> | void;
     on_step_end?: (stepInfo: {
       stepNumber: number;
       maxSteps: number;
       instruction: string;
       actionsPerformed: number;
+      message: string;
       completed: boolean;
     }) => void | Promise<void>;
   }): void {
