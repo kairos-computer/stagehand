@@ -345,7 +345,7 @@ export class GoogleCUAClient extends AgentClient {
           if (!candidate.content?.parts) {
             throw new LLMResponseError(
               "agent",
-              "Response candidate has malformed content structure (missing content.parts)"
+              "Response candidate has malformed content structure (missing content.parts)",
             );
           }
 
