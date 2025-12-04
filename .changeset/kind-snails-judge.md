@@ -2,4 +2,4 @@
 "@browserbasehq/stagehand": patch
 ---
 
-make ci faster
+Informed error parsing from api
