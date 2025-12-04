@@ -1,5 +1,12 @@
 # @browserbasehq/stagehand-evals
 
+## 1.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`fa18cfd`](https://github.com/browserbase/stagehand/commit/fa18cfdc45f28e35e6566587b54612396e6ece45), [`767d168`](https://github.com/browserbase/stagehand/commit/767d1686285cf9c57675595f553f8a891f13c63b), [`f27a99c`](https://github.com/browserbase/stagehand/commit/f27a99c11b020b33736fe67af8f7f0e663c6f45f), [`c0f3b98`](https://github.com/browserbase/stagehand/commit/c0f3b98277c15c77b2b4c3f55503e61ef3d27cf3), [`44bb4f5`](https://github.com/browserbase/stagehand/commit/44bb4f51dcccbdca8df07e4d7f8d28a7e6e793ec)]:
+  - @browserbasehq/stagehand@3.0.4
+
 ## 1.1.3
 
 ### Patch Changes
